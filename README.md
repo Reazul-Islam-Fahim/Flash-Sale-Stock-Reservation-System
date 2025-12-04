@@ -43,20 +43,54 @@ NODE_ENV=development
 - POST /reservations/:id/complete - Complete purchase
 - GET /reservations - All reservation
 - GET /reservations/active - Get active reservations
-- Get - /reservations/:id - Single reservation details
+- Get /reservations/:id - Single reservation details
 
 
 # Flash Sale Frontend
-```markdown
+
 ## Prerequisites
 - Node.js 18+
 - Backend running on port 3000
 
 ## Installation
-1. Navigate to frontend: `cd frontend`
-2. Install dependencies: `npm install`
+1. Navigate to frontend: ```cd frontend```
+2. Install dependencies: ```npm install```
 
 ## Environment Configuration
-Create `.env.local` file:
-```env
+Create ```.env.local``` file:
+```
 NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+## Running 
+- Development: ```npm run dev``` (runs on http://localhost:4000)
+- Production: ```npm run build && npm start```
+
+## Features
+- Real-time product listing
+- 2-minute countdown timers
+- Complete purchase flow
+- Status tracking (Active/Completed/Expired)
+
+
+## **✅ 3. Environment Configuration**
+
+### **Root `.env.example`:**
+```env
+# Backend
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=flash_sale
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+NODE_ENV=development
+PORT=3000
+
+# Frontend
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+

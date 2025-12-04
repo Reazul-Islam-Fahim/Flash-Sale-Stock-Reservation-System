@@ -26,3 +26,37 @@ REDIS_PORT=6379
 PORT=3000
 NODE_ENV=development
 ```
+
+## Database Setup
+- Start PostgreSQL
+- Create database ```CREATE DATABASE flash_sale;```
+- Run seed : ```npm run seed```
+
+## Running 
+- Development: ```npm run start:dev```
+- Production: ```npm run build && npm run start:prod```
+
+## API Endpoints
+- GET /products - List all products
+- GET /products/:id - Single product details
+- POST /reservations - Create reservation
+- POST /reservations/:id/complete - Complete purchase
+- GET /reservations - All reservation
+- GET /reservations/active - Get active reservations
+- Get - /reservations/:id - Single reservation details
+
+
+# Flash Sale Frontend
+```markdown
+## Prerequisites
+- Node.js 18+
+- Backend running on port 3000
+
+## Installation
+1. Navigate to frontend: `cd frontend`
+2. Install dependencies: `npm install`
+
+## Environment Configuration
+Create `.env.local` file:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000

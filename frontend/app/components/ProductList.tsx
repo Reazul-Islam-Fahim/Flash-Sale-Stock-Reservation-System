@@ -37,7 +37,7 @@ export default function ProductList() {
 
   // We'll create mutation instances inside the map function
 
-  if (isLoading) return <div className="text-center py-8">Loading products...</div>;
+  if (isLoading) return <div className="text-center py-8 text-black">Loading products...</div>;
 
   const productList: Product[] = products || [];
 

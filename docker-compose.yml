@@ -35,7 +35,7 @@ services:
     build: ./backend
     container_name: flash_sale_backend
     ports:
-      - "3001:3001"
+      - "3000:3000"
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
@@ -53,15 +53,15 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
-    command: npm run start:dev
+    command: npm run start:dev  # Only one command line!
 
   frontend:
     build: ./frontend
     container_name: flash_sale_frontend
     ports:
-      - "3000:3000"
+      - "4000:4000"
     environment:
-      NEXT_PUBLIC_API_URL: http://backend:3001
+      NEXT_PUBLIC_API_URL: http://backend:3000
       WATCHPACK_POLLING: "true"
     depends_on:
       - backend

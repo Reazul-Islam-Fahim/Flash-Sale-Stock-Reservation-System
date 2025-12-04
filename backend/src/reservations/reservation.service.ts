@@ -21,11 +21,11 @@ export class ReservationsService {
     private dataSource: DataSource,
     @InjectQueue('reservation-expiry')
     private expirationQueue: Queue,
-  ) {}
+  ) { }
 
   async createReservation(createReservationDto: CreateReservationDto) {
     const { productId, quantity } = createReservationDto;
-    
+
     // Use transaction to ensure atomicity
     return await this.dataSource.transaction(async (manager) => {
       // Lock the product row for update
@@ -74,11 +74,14 @@ export class ReservationsService {
   }
 
   async completeReservation(id: string) {
+    console.log(`🔄 Completing reservation: ${id}`);
+
     return await this.dataSource.transaction(async (manager) => {
+      // Get reservation WITHOUT relations to avoid outer join with FOR UPDATE
       const reservation = await manager.findOne(Reservation, {
         where: { id },
-        relations: ['product'],
         lock: { mode: 'pessimistic_write' },
+        // ⚠️ REMOVE relations: ['product'] here
       });
 
       if (!reservation) {
@@ -96,17 +99,40 @@ export class ReservationsService {
         throw new ConflictException('Reservation has expired');
       }
 
+      // Get product separately with lock
+      const product = await manager.findOne(Product, {
+        where: { id: reservation.productId },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!product) {
+        throw new NotFoundException('Product not found');
+      }
+
       // Update reservation status
       reservation.status = ReservationStatus.COMPLETED;
       reservation.completedAt = new Date();
 
       // Update product stock
-      const product = reservation.product;
       product.reservedStock -= reservation.quantity;
       // Available stock remains reduced (purchased)
 
+      console.log(`📊 Updating stock:`, {
+        productId: product.id,
+        reservedStock: `from ${product.reservedStock + reservation.quantity} to ${product.reservedStock}`,
+        availableStock: product.availableStock
+      });
+
       await manager.save(product);
-      return await manager.save(reservation);
+      const savedReservation = await manager.save(reservation);
+
+      console.log(`✅ Reservation completed: ${savedReservation.id}`);
+
+      // Return with populated product data
+      return {
+        ...savedReservation,
+        product // Manually attach product to response
+      };
     });
   }
 

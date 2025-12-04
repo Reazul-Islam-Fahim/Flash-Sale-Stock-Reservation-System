@@ -1,25 +1,28 @@
-# Flash Sale Stock Reservation System
+# Flash Sale Backend
 
-## Overview
-A full-stack system for reserving products during flash sales with 2-minute expiration timers.
+## Prerequisites
+- Node.js 18+
+- PostgreSQL 15+
+- Redis 7+
+- npm or yarn
 
-## Tech Stack
-- **Backend**: NestJS, TypeORM, PostgreSQL, Redis, Bull Queue
-- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS, React Query
-- **Database**: PostgreSQL
-- **Queue**: Redis with Bull
-- **Container**: Docker & Docker Compose
+## Installation
+1. Clone repository
+2. Navigate to backend: `cd backend`
+3. Install dependencies: `npm install`
 
-## Quick Start
+## Environment Configuration
+Create `.env` file:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=flash_sale
 
-### Option 1: Docker (Recommended)
-```bash
-# Clone repository
-git clone <repository-url>
-cd flash-sale-system
+REDIS_HOST=localhost
+REDIS_PORT=6379
 
-# Start all services
-docker-compose up -d
-
-# Seed database
-docker exec flash_sale_backend npm run seed
+PORT=3000
+NODE_ENV=development
+```

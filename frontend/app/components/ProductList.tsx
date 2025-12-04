@@ -36,17 +36,17 @@ export default function ProductList() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {productList.map((product) => (
         <div key={product.id} className="border rounded-lg p-4 shadow-sm">
-          <h3 className="text-lg font-semibold">{product.name}</h3>
+          <h3 className="text-lg font-semibold text-black">{product.name}</h3>
           <p className="text-gray-600">Price: ${formatPrice(product.price)}</p>
           <div className="mt-2">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-black">
               <span>Available: {product.availableStock}</span>
               <span className="text-orange-500">
                 Reserved: {product.reservedStock}
               </span>
             </div>
           </div>
-          <div className="mt-4 flex items-center space-x-2">
+          <div className="mt-4 flex items-center space-x-2 text-black">
             <input
               type="number"
               min="1"

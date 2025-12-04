@@ -27,10 +27,8 @@ export interface Reservation {
 }
 
 export const apiService = {
-  // Products
   getProducts: () => api.get<Product[]>('/products').then(res => res.data),
 
-  // Reservations
   createReservation: (productId: string, quantity: number) =>
     api.post<Reservation>('/reservations', { productId, quantity }).then(res => res.data),
 

@@ -144,31 +144,71 @@ export class ReservationsService {
   }
 
   async expireReservation(reservationId: string) {
+    console.log(`⏰ [expireReservation] Starting expiration for: ${reservationId}`);
+
     return await this.dataSource.transaction(async (manager) => {
+      // Get reservation WITHOUT relations to avoid outer join with FOR UPDATE
       const reservation = await manager.findOne(Reservation, {
         where: { id: reservationId },
-        relations: ['product'],
+        // ⚠️ REMOVE relations: ['product'] from here
         lock: { mode: 'pessimistic_write' },
       });
 
-      if (!reservation || reservation.status !== ReservationStatus.ACTIVE) {
+      if (!reservation) {
+        console.log(`❌ [expireReservation] Reservation not found: ${reservationId}`);
         return;
       }
 
-      // Only expire if still active and past expiration
-      if (new Date() <= reservation.expiresAt) {
+      if (reservation.status !== ReservationStatus.ACTIVE) {
+        console.log(`⚠️ [expireReservation] Reservation ${reservationId} is not active (status: ${reservation.status})`);
         return;
       }
 
+      // Check if reservation has actually expired
+      const now = new Date();
+      if (now <= reservation.expiresAt) {
+        console.log(`⏳ [expireReservation] Reservation ${reservationId} not expired yet (expires at: ${reservation.expiresAt})`);
+        return;
+      }
+
+      console.log(`🔄 [expireReservation] Expiring reservation ${reservationId}...`);
+
+      // Get product separately with lock
+      const product = await manager.findOne(Product, {
+        where: { id: reservation.productId },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!product) {
+        console.log(`❌ [expireReservation] Product not found for reservation ${reservationId}`);
+        return;
+      }
+
+      console.log(`📦 [expireReservation] Before restoration:`, {
+        productId: product.id,
+        availableStock: product.availableStock,
+        reservedStock: product.reservedStock,
+        reservationQuantity: reservation.quantity
+      });
+
+      // Update reservation status
       reservation.status = ReservationStatus.EXPIRED;
 
       // Restore product stock
-      const product = reservation.product;
       product.availableStock += reservation.quantity;
       product.reservedStock -= reservation.quantity;
 
+      console.log(`📦 [expireReservation] After restoration:`, {
+        availableStock: product.availableStock,
+        reservedStock: product.reservedStock
+      });
+
       await manager.save(product);
       await manager.save(reservation);
+
+      console.log(`✅ [expireReservation] Successfully expired reservation ${reservationId} and restored stock`);
+
+      return reservation;
     });
   }
 

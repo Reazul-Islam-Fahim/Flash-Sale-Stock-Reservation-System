@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiService } from '@/lib/api';
+import { apiService, type Reservation } from '@/lib/api';
 import { differenceInSeconds, formatDistanceToNow } from 'date-fns';
 import { useEffect, useState } from 'react';
 
@@ -12,7 +12,7 @@ export default function ReservationTimer() {
   const { data: reservations } = useQuery({
     queryKey: ['reservations', 'active'],
     queryFn: apiService.getActiveReservations,
-    refetchInterval: 1000, // Update every second for countdown
+    refetchInterval: 1000,
   });
 
   const completeMutation = useMutation({
@@ -23,13 +23,25 @@ export default function ReservationTimer() {
     },
   });
 
+  // Helper function to format price
+  const formatPrice = (price: any): string => {
+    const priceNum = typeof price === 'string' ? parseFloat(price) : price;
+    return priceNum.toFixed(2);
+  };
+
+  // Helper function to calculate total
+  const calculateTotal = (price: any, quantity: number): string => {
+    const priceNum = typeof price === 'string' ? parseFloat(price) : price;
+    return (priceNum * quantity).toFixed(2);
+  };
+
   // Update timers every second
   useEffect(() => {
     const interval = setInterval(() => {
       if (!reservations) return;
       
       const newTimers: Record<string, number> = {};
-      reservations.forEach(reservation => {
+      (reservations as Reservation[]).forEach((reservation: Reservation) => {
         const remaining = Math.max(0, differenceInSeconds(
           new Date(reservation.expiresAt),
           new Date()
@@ -57,7 +69,9 @@ export default function ReservationTimer() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  if (!reservations?.length) {
+  const reservationList: Reservation[] = reservations || [];
+
+  if (reservationList.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
         No active reservations
@@ -68,16 +82,16 @@ export default function ReservationTimer() {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold mb-4">Active Reservations</h2>
-      {reservations.map((reservation) => (
+      {reservationList.map((reservation) => (
         <div key={reservation.id} className="border rounded-lg p-4">
           <div className="flex justify-between items-start">
             <div>
               <h3 className="font-semibold">{reservation.product.name}</h3>
               <p className="text-sm text-gray-600">
-                Quantity: {reservation.quantity} × ${reservation.product.price.toFixed(2)}
+                Quantity: {reservation.quantity} × ${formatPrice(reservation.product.price)}
               </p>
               <p className="text-sm text-gray-600">
-                Total: ${(reservation.quantity * reservation.product.price).toFixed(2)}
+                Total: ${calculateTotal(reservation.product.price, reservation.quantity)}
               </p>
             </div>
             <div className="text-right">

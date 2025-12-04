@@ -18,7 +18,7 @@ async function seed() {
     password: process.env.DB_PASSWORD || 'postgres',
     database: process.env.DB_NAME || 'flash_sale',
     entities: [Product, Reservation],
-    synchronize: true, // Use migrations in production
+    synchronize: true,
   });
 
   try {
@@ -28,10 +28,16 @@ async function seed() {
     const productRepository = dataSource.getRepository(Product);
     const reservationRepository = dataSource.getRepository(Reservation);
 
-    // Clear existing data (optional - comment out if you want to keep existing data)
-    await reservationRepository.delete({});
-    await productRepository.delete({});
-    console.log('Cleared existing data');
+    // Option 1: Delete in correct order (Reservations first, then Products)
+    console.log('Clearing existing data...');
+    
+    // First delete all reservations (child table)
+    await reservationRepository.createQueryBuilder().delete().execute();
+    console.log('Cleared reservations');
+    
+    // Then delete all products (parent table)
+    await productRepository.createQueryBuilder().delete().execute();
+    console.log('Cleared products');
 
     const products = [
       { name: 'iPhone 15 Pro', price: 999.99, availableStock: 10, reservedStock: 0 },
@@ -44,10 +50,11 @@ async function seed() {
       { name: 'Sony WH-1000XM5', price: 399.99, availableStock: 9, reservedStock: 0 },
     ];
 
+    console.log('Seeding products...');
     for (const productData of products) {
       const product = productRepository.create(productData);
       await productRepository.save(product);
-      console.log(`Created product: ${product.name}`);
+      console.log(`   Created product: ${product.name}`);
     }
 
     console.log('Database seeded successfully!');

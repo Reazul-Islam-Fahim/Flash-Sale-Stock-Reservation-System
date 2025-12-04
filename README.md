@@ -73,9 +73,9 @@ NEXT_PUBLIC_API_URL=http://localhost:3000
 - Status tracking (Active/Completed/Expired)
 
 
-## **✅ 3. Environment Configuration**
+## Environment Configuration
 
-### **Root `.env.example`:**
+### Root `.env.example`:
 ```env
 # Backend
 DB_HOST=localhost

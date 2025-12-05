@@ -34,3 +34,4 @@ Build a flash sale system where users can reserve products for exactly 2 minutes
 ---
 
 ## 2. Architecture Diagram
+![Alt text](database_schema.png)

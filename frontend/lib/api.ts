@@ -1,5 +1,11 @@
 import axios from 'axios';
 
+const API_URL =
+  typeof window === 'undefined'
+    ? 'http://backend:3000' // server-side (SSR, Docker)
+    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'; // client-side (browser)
+
+
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {

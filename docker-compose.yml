@@ -48,10 +48,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    command: npm run start:dev
     volumes:
       - ./backend:/app
       - /app/node_modules
-    command: npm run start:dev
+      # - /app/dist  
 
   seed:
     build: ./backend
@@ -66,7 +67,9 @@ services:
       DB_PASSWORD: postgres
       DB_NAME: flash_sale
       NODE_ENV: development
-    command: sh -c "sleep 10 && npm run seed"
+    command: npm run seed
+
+ 
 
   frontend:
     build: ./frontend

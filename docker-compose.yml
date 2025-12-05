@@ -52,7 +52,6 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
-      # - /app/dist  
 
   seed:
     build: ./backend
@@ -69,15 +68,13 @@ services:
       NODE_ENV: development
     command: npm run seed
 
- 
-
   frontend:
     build: ./frontend
     container_name: flash_sale_frontend
     ports:
       - "4000:4000"
     environment:
-      NEXT_PUBLIC_API_URL: http://backend:3000
+      NEXT_PUBLIC_API_URL: http://localhost:3000
       WATCHPACK_POLLING: "true"
     depends_on:
       - backend

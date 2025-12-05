@@ -71,3 +71,12 @@ NEXT_PUBLIC_API_URL=http://localhost:3000
 - 2-minute countdown timers
 - Complete purchase flow
 - Status tracking (Active/Completed/Expired)
+
+
+# Run using docker
+- Make sure docker desktop is installed and docker engine is running
+- Close all previous docker files (not mandatory)
+```docker compose down --volumes```
+- Now run the command 
+```docker compose up --build```
+You can see the output on localhost:3000 (backend) and localhost:4000 (frontend)
